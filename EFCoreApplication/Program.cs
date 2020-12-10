@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading;
 using static System.Console;
 
@@ -21,7 +22,7 @@ namespace EFCoreApplication
 
                 WriteLine("1. Categories");
 
-                WriteLine("2. Articles [Ignore]");
+                WriteLine("2. Articles [Placebo]");
 
                 WriteLine("3. Exit Application");
 
@@ -32,7 +33,7 @@ namespace EFCoreApplication
                     case ConsoleKey.D1:
                         Clear();
 
-                        bool subCategorieChoices = true;
+                        bool subMenuOptions = true;
 
                         do
                         {
@@ -48,9 +49,9 @@ namespace EFCoreApplication
 
                             WriteLine("Press [X] To Return To Main Menu.");
 
-                            ConsoleKeyInfo subMenuCategoryKeyInput = ReadKey();
+                            ConsoleKeyInfo subMenuOptionsKey = ReadKey();
 
-                            if (subMenuCategoryKeyInput.Key == ConsoleKey.D1)
+                            if (subMenuOptionsKey.Key == ConsoleKey.D1)
                             {
                                 // Declaring the addingCategory boolean value and setting it to True.
                                 bool addingCategory = true;
@@ -59,7 +60,7 @@ namespace EFCoreApplication
                                 AddCategory(addingCategory);
 
                             }
-                            else if (subMenuCategoryKeyInput.Key == ConsoleKey.D2)
+                            else if (subMenuOptionsKey.Key == ConsoleKey.D2)
                             {
                                 Clear();
 
@@ -68,58 +69,54 @@ namespace EFCoreApplication
                                 WriteLine("------------------------------------------------------------------");
 
                                 // We want a code here using Entity Framework Core to list our table inside our Console Application.
+                                bool listingCategories = true;
 
-                                // -
+                                ListCategories(listingCategories);
 
                                 WriteLine("");
 
-                                WriteLine("Press Any Key To Return");
+                                WriteLine("[Press Any Key To Return]");
 
                                 ReadKey(true);
 
                                 Clear();
                             }
-                            else if (subMenuCategoryKeyInput.Key == ConsoleKey.D3)
+                            else if (subMenuOptionsKey.Key == ConsoleKey.D3)
                             {
                                 Clear();
 
-                                WriteLine("ID  Category                                       Total products");
+                                WriteLine("Add Product To Category");
 
                                 WriteLine("------------------------------------------------------------------");
 
-                                //ListTasks();
+                                // Now we want a method that lists all of our categories, allowing us to add a product to our specified category.
+                                bool addingProductToCategory = true;
 
-                                //ListTasksBySearch();
+                                AddProductToCategory(addingProductToCategory);
 
                                 CursorVisible = false;
 
                                 Clear();
-
-                                // Input Code
                             }
-                            else if (subMenuCategoryKeyInput.Key == ConsoleKey.D4)
+                            else if (subMenuOptionsKey.Key == ConsoleKey.D4)
                             {
                                 Clear();
 
-                                WriteLine("ID  Category                                       Total products");
+                                WriteLine("Add Category to Category");
 
                                 WriteLine("------------------------------------------------------------------");
 
-                                //ListTasks();
-
-                                //ListTasksBySearchCategory();
+                                // Here we want a method that lists all of our categories, allowing us to add a subcategory to the respective chosen category.
 
                                 CursorVisible = false;
 
                                 Clear();
-
-                                // Input Code
                             }
-                            else if (subMenuCategoryKeyInput.Key == ConsoleKey.X)
+                            else if (subMenuOptionsKey.Key == ConsoleKey.X)
                             {
-                                subCategorieChoices = false;
+                                subMenuOptions = false;
                             }
-                        } while (subCategorieChoices);
+                        } while (subMenuOptions);
 
                         Clear();
 
@@ -128,6 +125,12 @@ namespace EFCoreApplication
                         Clear();
 
                         // No function is to be put here. This is just a placebo inside the application.
+
+                        WriteLine("No function is to be put here. This is just a placebo inside the application.");
+
+                        Thread.Sleep(1500);
+
+                        Clear();
 
                         break;
                     case ConsoleKey.D3:
@@ -140,6 +143,7 @@ namespace EFCoreApplication
             } while (mainMenu);
         }
 
+        // Method for adding a new category to the table Categories in our SQL Database.
         private static void AddCategory(bool addingCategory)
         {
             // Declaring a do, while loop with the addingCategory boolean value set to true.
@@ -147,6 +151,12 @@ namespace EFCoreApplication
             {
                 // A clear method to clear the main menu while we are adding a new value to our table.
                 Clear();
+
+                // Added title, whitespace and line for design purposes and user experience.
+                WriteLine("Add New Category");
+                WriteLine("------------------------------------------------------------------");
+
+                WriteLine(" ");
 
                 // Cursor set to visible (true) for better user experience.
                 CursorVisible = true;
@@ -200,6 +210,78 @@ namespace EFCoreApplication
                     Clear();
                 }
             } while (addingCategory);
+        }
+
+        // Method for listing all existing values inside our Categories table in our SQL Database.
+        // These methods are called queries which are written against the DbSet property of the entity. They're written using LINQ to Entities API.
+        private static void ListCategories (bool listingCategories)
+        {
+            using (var dbRetrieve = new ProgramContext())
+            {
+                // Here we declare a list for our Categories class to retrieve the data from our table in the database.
+                List<Categories> Categories = dbRetrieve.Category.ToList();
+
+                // Foreach value found inside our Categories class which we retrieve from our table, we print it out to the console.
+                foreach (Categories ctg in Categories)
+                {
+                    WriteLine($"Category ID: {ctg.CategoryId} | Category Name: {ctg.CategoryName}");
+                }
+            }
+        }
+
+        // Method for adding a product to our categories.
+        private static void AddProductToCategory (bool addingProductToCategory)
+        {
+            // Here we use our preceding method inside this method for listing all of the categories.
+            bool listingCategories = true;
+
+            ListCategories(listingCategories);
+
+            // Here we want the user to be able to specify which category to choose by ID and to be able to add a new product to that category.
+            
+            // Whitespace
+            WriteLine(" ");
+            
+            // ReadLine for the user to input which ID will be chosen.
+            Write("Specify Category By Entering Corresponding ID: ");
+
+            // CursorVisible set to visible for better user experience.
+            CursorVisible = true;
+
+            // We convert the string input by the user to an integer which can be read by SQL through the query further below.
+            var specifyById = Convert.ToInt32(ReadLine());
+
+            // CursorVisible set to hidden after user has input which ID to be chosen.
+            CursorVisible = false;
+
+            // Declare a variable with a new ProgramContext so that we can list out the category by the specified ID input by the user.
+            var context = new ProgramContext();
+
+            /* Here we create a List with the class Categories and search for the specific Category where the ID of that Category corresponds with the one input by the user 
+            in the specifyById variable. */
+            List<Categories> specifyCategoryById = context.Category
+                .Where(c => c.CategoryId == specifyById)
+                .ToList();
+
+            Clear();
+
+            // For User Experience.
+            WriteLine("Add Product To Chosen Category");
+
+            WriteLine("------------------------------------------------------------------");
+
+            // We iterate over the list to print out the category name and ID on to the console.
+            foreach (Categories ctg in specifyCategoryById)
+            {
+                WriteLine($"Category ID: {ctg.CategoryId} | Category Name: {ctg.CategoryName}");
+            }
+
+            // Here we want to give the user the option to exit from the process or to add a product to the category.
+            WriteLine(" ");
+
+            WriteLine("[A] Add Product [ESC] Return To Submenu");
+
+            ReadKey(true);
         }
     }
 }
