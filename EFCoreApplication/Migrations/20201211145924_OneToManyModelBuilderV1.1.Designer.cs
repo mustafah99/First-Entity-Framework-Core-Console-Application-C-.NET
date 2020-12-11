@@ -3,35 +3,22 @@ using EFCoreApplication.Classes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EFCoreApplication.Migrations
 {
     [DbContext(typeof(ProgramContext))]
-    partial class ProgramContextModelSnapshot : ModelSnapshot
+    [Migration("20201211145924_OneToManyModelBuilderV1.1")]
+    partial class OneToManyModelBuilderV11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
-
-            modelBuilder.Entity("CategoriesChildCategories", b =>
-                {
-                    b.Property<int>("ChildCategoriesCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ParentCategoryCategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ChildCategoriesCategoryId", "ParentCategoryCategoryId");
-
-                    b.HasIndex("ParentCategoryCategoryId");
-
-                    b.ToTable("CategoriesChildCategories");
-                });
 
             modelBuilder.Entity("CategoriesProducts", b =>
                 {
@@ -63,21 +50,6 @@ namespace EFCoreApplication.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("EFCoreApplication.Classes.ChildCategories", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("CategoryName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("ChildCategories");
-                });
-
             modelBuilder.Entity("EFCoreApplication.Classes.Products", b =>
                 {
                     b.Property<int>("ProductId")
@@ -91,21 +63,6 @@ namespace EFCoreApplication.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Product");
-                });
-
-            modelBuilder.Entity("CategoriesChildCategories", b =>
-                {
-                    b.HasOne("EFCoreApplication.Classes.ChildCategories", null)
-                        .WithMany()
-                        .HasForeignKey("ChildCategoriesCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EFCoreApplication.Classes.Categories", null)
-                        .WithMany()
-                        .HasForeignKey("ParentCategoryCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("CategoriesProducts", b =>
