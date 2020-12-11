@@ -60,6 +60,7 @@ namespace EFCoreApplication
                                 // Using the method we created to add a category to our table in our database.
                                 AddCategory(addingCategory);
 
+                                break;
                             }
                             else if (subMenuOptionsKey.Key == ConsoleKey.D2)
                             {
@@ -98,6 +99,8 @@ namespace EFCoreApplication
                                 CursorVisible = false;
 
                                 Clear();
+
+                                break;
                             }
                             else if (subMenuOptionsKey.Key == ConsoleKey.D4)
                             {
@@ -112,6 +115,8 @@ namespace EFCoreApplication
                                 CursorVisible = false;
 
                                 Clear();
+
+                                break;
                             }
                             else if (subMenuOptionsKey.Key == ConsoleKey.X)
                             {
